@@ -24,4 +24,5 @@ odoo实时更新数据要用到bus,看起来都好麻烦,
 ...//修改默认刷新时间为3秒
 </kanban>
 ```
-
+===举一个栗子
+<img  src="https://github.com/openliu/odoo_auto_reload/blob/10.0/odoo_auto_reload/static/description/help1.jpg?raw=true" />
