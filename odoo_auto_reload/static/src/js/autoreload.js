@@ -1,15 +1,20 @@
 // ##############################################################################
 // #    odoo autoreload
 // #    author:15251908@qq.com (openliu)
-// #    license:'LGPL-3
+// #    license:'MIT'
 // #
 // ##############################################################################
 odoo.define('autoreload', function (require) {
     "use strict";
 
-    // var framework = require('web.framework');
     var ListView = require('web.ListView');
-    var KanbanView = require('web_kanban.KanbanView');
+    var KanbanView = require('web.KanbanView');
+    var ListController = require('web.ListController');
+    var KanbanController = require('web.KanbanController');
+
+
+    
+    var controller;
 
     var interval;
 
@@ -18,15 +23,29 @@ odoo.define('autoreload', function (require) {
         return !!tmp;
     }
 
+    ListController.include({
+        renderPager: function () {
+            controller=this;
+            // console.log(this);
+            return this._super.apply(this, arguments);
+        }
+    });
+
+    KanbanController.include({
+        renderPager: function () {
+            controller=this;
+            // console.log(this);
+            return this._super.apply(this, arguments);
+        }
+    });
+
     ListView.include({
-        init: function() {
-            var self = this;
+        init: function (viewInfo, params) {
             this._super.apply(this, arguments);
             if (interval){
                 clearInterval(interval);
             }
-
-            var auto_class = this.fields_view.arch.attrs.class;
+            var auto_class = this.arch.attrs.class;
             // console.log("auto_reload:"+ auto_class );
 
             if(auto_class && auto_class.indexOf('auto_reload')>=0){
@@ -42,7 +61,7 @@ odoo.define('autoreload', function (require) {
                     try {
                         // console.log('reload:'+isBlockUI());
                         if (!isBlockUI()){
-                            self.reload();
+                            controller.reload();
                         }
                     } catch (e) {
                         console.log(e);
@@ -53,14 +72,13 @@ odoo.define('autoreload', function (require) {
     });
 
     KanbanView.include({
-        init: function() {
-            var self = this;
+
+        init: function (viewInfo, params) {
             this._super.apply(this, arguments);
             if (interval){
                 clearInterval(interval);
             }
-
-            var auto_class = this.fields_view.arch.attrs.class;
+            var auto_class = this.arch.attrs.class;
             // console.log("auto_reload:"+ auto_class );
 
             if(auto_class && auto_class.indexOf('auto_reload')>=0){
@@ -76,16 +94,14 @@ odoo.define('autoreload', function (require) {
                     try {
                         // console.log('reload:'+isBlockUI());
                         if (!isBlockUI()){
-                            self.do_reload();
+                            controller.reload();
                         }
                     } catch (e) {
                         console.log(e);
                     }
                 }, timeout);
             }
-        },
+        }
     });
-
-
 
 });
